@@ -40,23 +40,44 @@ jobs:
           file: ./php/Dockerfile
           tags: rguasch/php:latest
 
-  TEST_PARALEL_ACTIONS_1:
+  PUSH_NODE_IMAGE_TO_DOCKER_HUB:
     runs-on: ubuntu-latest
     steps:
-      - name: my-step
-        run: echo "Hello World 111111111!"
+      - uses: actions/checkout@v2
+      - uses: dorny/paths-filter@v2
+        id: changes
+        with:
+          filters: |
+            node:
+              - 'node/**'
 
-  TEST_PARALEL_ACTIONS_2:
-    runs-on: ubuntu-latest
-    steps:
-      - name: my-step
-        run: echo "Hello World 2222222222!"
+      - name: Set up QEMU
+        if: steps.changes.outputs.node == 'true'
+        uses: docker/setup-qemu-action@v1
+
+      - name: Set up Docker Buildx
+        if: steps.changes.outputs.node == 'true'
+        uses: docker/setup-buildx-action@v1
+
+      - name: Login to DockerHub
+        if: steps.changes.outputs.node == 'true'
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKER_HUB_USER }}
+          password: ${{ secrets.DOCKER_HUB_TOKEN }}
+
+      - name: Build and push
+        if: steps.changes.outputs.node == 'true'
+        uses: docker/build-push-action@v2
+        with:
+          push: true
+          file: ./node/Dockerfile
+          tags: rguasch/node:latest
 
   SEND_EMAIL:
     needs:
       - PUSH_PHP_IMAGE_TO_DOCKER_HUB
-      - TEST_PARALEL_ACTIONS_1
-      - TEST_PARALEL_ACTIONS_2
+      - PUSH_NODE_IMAGE_TO_DOCKER_HUB
     runs-on: ubuntu-latest
     steps:
       - name: Send email

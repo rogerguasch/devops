@@ -8,3 +8,11 @@ services:
       dockerfile: php/Dockerfile
     extra_hosts:
       - host.docker.internal:host-gateway
+
+  node:
+    container_name: node
+    build:
+      context: .
+      dockerfile: node/Dockerfile
+    extra_hosts:
+      - host.docker.internal:host-gateway
