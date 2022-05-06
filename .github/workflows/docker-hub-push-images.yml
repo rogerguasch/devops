@@ -6,7 +6,7 @@ on:
       - 'main'
 
 jobs:
-  docker:
+  PUSH_PHP_IMAGE_TO_DOCKER_HUB:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -39,3 +39,15 @@ jobs:
           push: true
           file: ./php/Dockerfile
           tags: rguasch/php:latest
+
+  TEST_PARALEL_ACTIONS_1:
+    runs-on: ubuntu-latest
+    steps:
+      - name: my-step
+        run: echo "Hello World 111111111!"
+
+  TEST_PARALEL_ACTIONS_2:
+    runs-on: ubuntu-latest
+    steps:
+      - name: my-step
+        run: echo "Hello World 2222222222!"
