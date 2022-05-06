@@ -51,3 +51,20 @@ jobs:
     steps:
       - name: my-step
         run: echo "Hello World 2222222222!"
+
+  SEND_EMAIL:
+    needs:
+      - PUSH_PHP_IMAGE_TO_DOCKER_HUB
+      - TEST_PARALEL_ACTIONS_1
+      - TEST_PARALEL_ACTIONS_2
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send email
+        uses: dawidd6/action-send-mail@v3.6.1
+        with:
+          username: ${{secrets.MAIL_USERNAME}}
+          password: ${{secrets.MAIL_PASSWORD}}
+          subject: Docker images pushed to DockerHub
+          to: ${{secrets.MAIL_USERNAME}}
+          from: ${{secrets.MAIL_USERNAME}}
+          body: Build job of ${{github.repository}} completed successfully!
